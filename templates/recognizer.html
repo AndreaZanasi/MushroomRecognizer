@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recognizer</title>
+    <link rel="stylesheet" href="/static/recognizer.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Upload Mushroom Image</h1>
+        <form action="/upload" method="post" enctype="multipart/form-data">
+            <label class="upload-button">
+                <img src="/static/images/image-.png" alt="Upload Icon" class="upload-icon">
+                <span>Upload Image</span>
+                <input type="file" name="file" accept="image/jpeg, image/jpg" style="display: none;">
+            </label>
+        </form>
+    </div>
+</body>
+</html>

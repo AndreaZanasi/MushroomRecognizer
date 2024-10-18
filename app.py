@@ -14,5 +14,9 @@ def register():
 def login():
     return render_template('login.html')
 
+@app.route('/recognizer')
+def recognizer():
+    return render_template('recognizer.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
