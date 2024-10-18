@@ -79,36 +79,7 @@ body::before {
   }
 }
 
-.upload-button {
-  display: flex; /* Make buttons display icons inline */
-  align-items: center; /* Align icon and text vertically */
-  justify-content: space-between; /* Space text and icon evenly */
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.1); /* Inherit from existing .btn style */
-  border: 1px solid rgba(255, 255, 255, 0.3); /* Inherit from existing .btn style */
-  border-radius: 5px; /* Inherit from existing .btn style */
-  color: #fff; /* Inherit from existing .btn style */
-  text-decoration: none; /* Inherit from existing .btn style */
-  transition: background 0.3s, border 0.3s; /* Inherit from existing .btn style */
-  cursor: pointer; /* Make buttons clickable */
-}
-
-.upload-button:hover {
-  background: rgba(255, 255, 255, 0.2); /* Inherit from existing .btn style */
-  border: 1px solid rgba(255, 255, 255, 0.5); /* Inherit from existing .btn style */
-}
-
-.upload-section {
-  margin-top: 20px;
-  display: flex; /* Make the upload section a flexbox */
-  flex-direction: column; /* Buttons will stack vertically by default */
-  align-items: center; /* Buttons will be centered horizontally */
-}
-
-.upload-section label {
-  margin-bottom: 10px; /* Add space between label and buttons */
-}
-
+.upload-button,
 .upload-section button {
   display: flex; /* Make buttons display icons inline */
   align-items: center; /* Align icon and text vertically */
@@ -121,11 +92,23 @@ body::before {
   text-decoration: none; /* Inherit from existing .btn style */
   transition: background 0.3s, border 0.3s; /* Inherit from existing .btn style */
   cursor: pointer; /* Make buttons clickable */
+  font-size: 16px;
+
+  /* New properties to set same size */
+  width: 180px;
+  height: 40px;
 }
 
-.upload-section button:hover {
-  background: rgba(255, 255, 255, 0.2); /* Inherit from existing .btn style */
-  border: 1px solid rgba(255, 255, 255, 0.5); /* Inherit from existing .btn style */
+.upload-section {
+  margin-top: 20px;
+  display: flex; /* Make the upload section a flexbox */
+  flex-direction: column; /* Buttons will stack vertically by default */
+  align-items: center; /* Buttons will be centered horizontally */
+  font-size: 16px;
+}
+
+.upload-section label {
+  margin-bottom: 10px; /* Add space between label and buttons */
 }
 
 .icon {
