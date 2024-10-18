@@ -32,9 +32,16 @@ body::before {
   z-index: -1;
 }
 
+h1 {
+  margin-bottom: 20px; /* Adjust the value as needed */
+}
+
 .content {
   text-align: center;
   color: #fff;
+  padding: 0 20px; /* Add padding to the left and right */
+  max-width: 800px; /* Set a maximum width for the content */
+  margin: 0 auto; /* Center the content */
 }
 
 .buttons {
