@@ -3,19 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recognizer</title>
     <link rel="stylesheet" href="/static/recognizer.css">
+    <title>Mushroom Recognizer</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Upload Mushroom Image</h1>
-        <form action="/upload" method="post" enctype="multipart/form-data">
-            <label class="upload-button">
-                <img src="/static/images/image-.png" alt="Upload Icon" class="upload-icon">
+    <div class="wrapper">
+        <header>
+            <h1>Mushroom Recognizer</h1>
+</header>
+<main>
+    <section class="upload-section">
+        <form id="upload-form" action="/recognizer" method="post" enctype="multipart/form-data">
+            <label for="image-upload" class="upload-button">
+                <img src="/static/images/image-.png" alt="Upload Icon" class="icon">
                 <span>Upload Image</span>
-                <input type="file" name="file" accept="image/jpeg, image/jpg" style="display: none;">
+                <input id="image-upload" type="file" name="files" accept="image/jpeg, image/jpg" multiple style="display: none;">
             </label>
+            <button type="submit">
+                <img src="/static/images/analyze.png" alt="Analyze Icon" class="icon">
+                <span>Analyze</span>
+            </button>
         </form>
-    </div>
+        <div id="result">
+            <div class="loader" id="loader" style="display: none;"></div>
+            <!-- Prediction result will be displayed here -->
+        </div>
+    </section>
+</main>
+</div>
+<script>
+    document.getElementById('upload-form').onsubmit = async function(event) {
+        event.preventDefault();
+        document.getElementById('loader').style.display = 'block';
+        const formData = new FormData(this);
+        const response = await fetch('/recognizer', {
+            method: 'POST',
+            body: formData
+        });
+        const result = await response.json();
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('result').innerText = result.predictions.join(', ');
+        this.reset(); // Reset the form to allow new uploads
+    };
+</script>
 </body>
 </html>

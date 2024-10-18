@@ -32,59 +32,111 @@ body::before {
   z-index: -1;
 }
 
-.container {
-  text-align: center;
+#result {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  color: #333;
+  padding: 15px; /* Add padding inside the box */
+  background: rgba(255, 255, 255, 0.1); /* Light background color */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Border similar to buttons */
+  border-radius: 10px; /* Rounded corners */
+  width: 100%; /* Full width */
+  max-width: 600px; /* Maximum width */
+  text-align: center; /* Center the text */
+  display: flex; /* Use flexbox */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  min-height: 100px; /* Minimum height to ensure the loader is centered */
+}
+
+.loader {
+  width: 40px;
+  aspect-ratio: 1;
+  --c: linear-gradient(#000 0 0);
+  --r1: radial-gradient(farthest-side at bottom, #000 93%, #0000);
+  --r2: radial-gradient(farthest-side at top, #000 93%, #0000);
+  background: var(--c), var(--r1), var(--r2), var(--c), var(--r1), var(--r2), var(--c), var(--r1), var(--r2);
+  background-repeat: no-repeat;
+  animation: l2 1s infinite alternate;
+}
+
+@keyframes l2 {
+  0%, 25% {
+    background-size: 8px 0, 8px 4px, 8px 4px, 8px 0, 8px 4px, 8px 4px, 8px 0, 8px 4px, 8px 4px;
+    background-position: 0 50%, 0 calc(50% - 2px), 0 calc(50% + 2px), 50% 50%, 50% calc(50% - 2px), 50% calc(50% + 2px), 100% 50%, 100% calc(50% - 2px), 100% calc(50% + 2px);
+  }
+  50% {
+    background-size: 8px 100%, 8px 4px, 8px 4px, 8px 0, 8px 4px, 8px 4px, 8px 0, 8px 4px, 8px 4px;
+    background-position: 0 50%, 0 calc(0% - 2px), 0 calc(100% + 2px), 50% 50%, 50% calc(50% - 2px), 50% calc(50% + 2px), 100% 50%, 100% calc(50% - 2px), 100% calc(100% + 2px);
+  }
+  75% {
+    background-size: 8px 100%, 8px 4px, 8px 4px, 8px 100%, 8px 4px, 8px 4px, 8px 0, 8px 4px, 8px 4px;
+    background-position: 0 50%, 0 calc(0% - 2px), 0 calc(100% + 2px), 50% 50%, 50% calc(0% - 2px), 50% calc(100% + 2px), 100% 50%, 100% calc(50% - 2px), 100% calc(100% + 2px);
+  }
+  95%, 100% {
+    background-size: 8px 100%, 8px 4px, 8px 4px, 8px 100%, 8px 4px, 8px 4px, 8px 100%, 8px 4px, 8px 4px;
+    background-position: 0 50%, 0 calc(0% - 2px), 0 calc(100% + 2px), 50% 50%, 50% calc(0% - 2px), 50% calc(100% + 2px), 100% 50%, 100% calc(50% - 2px), 100% calc(100% + 2px);
+  }
 }
 
 .upload-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; /* Make buttons display icons inline */
+  align-items: center; /* Align icon and text vertically */
+  justify-content: space-between; /* Space text and icon evenly */
   padding: 10px 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  cursor: pointer;
+  background: rgba(255, 255, 255, 0.1); /* Inherit from existing .btn style */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Inherit from existing .btn style */
+  border-radius: 5px; /* Inherit from existing .btn style */
+  color: #fff; /* Inherit from existing .btn style */
+  text-decoration: none; /* Inherit from existing .btn style */
+  transition: background 0.3s, border 0.3s; /* Inherit from existing .btn style */
+  cursor: pointer; /* Make buttons clickable */
 }
 
-.upload-icon {
-  width: 24px;
-  height: 24px;
-  margin-right: 10px;
+.upload-button:hover {
+  background: rgba(255, 255, 255, 0.2); /* Inherit from existing .btn style */
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Inherit from existing .btn style */
+}
+
+.upload-section {
+  margin-top: 20px;
+  display: flex; /* Make the upload section a flexbox */
+  flex-direction: column; /* Buttons will stack vertically by default */
+  align-items: center; /* Buttons will be centered horizontally */
+}
+
+.upload-section label {
+  margin-bottom: 10px; /* Add space between label and buttons */
+}
+
+.upload-section button {
+  display: flex; /* Make buttons display icons inline */
+  align-items: center; /* Align icon and text vertically */
+  justify-content: space-between; /* Space text and icon evenly */
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1); /* Inherit from existing .btn style */
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Inherit from existing .btn style */
+  border-radius: 5px; /* Inherit from existing .btn style */
+  color: #fff; /* Inherit from existing .btn style */
+  text-decoration: none; /* Inherit from existing .btn style */
+  transition: background 0.3s, border 0.3s; /* Inherit from existing .btn style */
+  cursor: pointer; /* Make buttons clickable */
+}
+
+.upload-section button:hover {
+  background: rgba(255, 255, 255, 0.2); /* Inherit from existing .btn style */
+  border: 1px solid rgba(255, 255, 255, 0.5); /* Inherit from existing .btn style */
+}
+
+.icon {
+  width: 20px; /* Adjust icon size as needed */
+  height: 20px; /* Adjust icon size as needed */
+  margin-right: 10px; /* Add space between icon and text */
+  /* Add your desired icon images using CSS background-image property */
 }
 
 h1 {
   margin-bottom: 20px; /* Adjust the value as needed */
-}
-
-.content {
-  text-align: center;
-  color: #fff;
-  padding: 0 20px; /* Add padding to the left and right */
-  max-width: 800px; /* Set a maximum width for the content */
-  margin: 0 auto; /* Center the content */
-}
-
-.buttons {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
-}
-
-.btn {
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 5px;
-  color: #fff;
-  text-decoration: none;
-  transition: background 0.3s, border 0.3s;
-}
-
-.btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 @media (max-width: 600px) {
