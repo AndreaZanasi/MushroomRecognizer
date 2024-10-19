@@ -43,7 +43,7 @@
         const result = await response.json();
         document.getElementById('loader').style.display = 'none';
         document.getElementById('result').innerText = result.predictions.join(', ');
-        this.reset(); // Reset the form to allow new uploads
+        this.reset();
     };
 </script>
 </body>
