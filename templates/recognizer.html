@@ -27,7 +27,8 @@
                 <div id="selected-image-name" style="margin-top: 10px;"></div>
                 <div id="result">
                     <div class="loader" id="loader" style="display: none;"></div>
-                    </div>
+                    <div id="prediction-text"></div>
+                </div>
             </section>
         </main>
     </div>
@@ -36,6 +37,7 @@
         const selectedImage = document.getElementById('selected-image-name');
         const resultDiv = document.getElementById('result');
         const loader = document.getElementById('loader');
+        const predictionText = document.getElementById('prediction-text');
 
         imageUpload.addEventListener('change', function() {
             const fileName = this.files.length > 0 ? this.files[0].name : 'No file selected';
@@ -45,16 +47,15 @@
         document.getElementById('upload-form').onsubmit = async function(event) {
             event.preventDefault();
             loader.style.display = 'block';
-            resultDiv.innerHTML = ''; // Clear previous results
-
+            predictionText.innerHTML = ''; // Clear previous prediction
             const formData = new FormData(this);
             const response = await fetch('/recognizer', {
                 method: 'POST',
                 body: formData
             });
             const result = await response.json();
+            predictionText.innerHTML = result.predictions.join(', ');
             loader.style.display = 'none';
-            resultDiv.innerHTML = result.predictions.join(', ');
         };
     </script>
 </body>
