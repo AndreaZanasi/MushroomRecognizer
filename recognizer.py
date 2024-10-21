@@ -3,6 +3,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 import torchvision.models as models
 import torch.nn as nn
+import torch.nn.functional as F
 
 # Define the predict_image function
 def predict(image_path, class_names):
@@ -19,8 +20,12 @@ def predict(image_path, class_names):
     
     with torch.no_grad():
         outputs = model(image)
-        _, predicted = torch.max(outputs, 1)
-        return class_names[predicted.item()]
+        probabilities = F.softmax(outputs, dim=1) * 100
+        _, predicted = torch.max(probabilities, 1)
+        predicted_name = class_names[predicted.item()]
+        confidence = probabilities[0][predicted.item()]
+        
+        return predicted_name, round(float(confidence),1)
     
 def load_model():
     model = models.resnet18(weights=None)

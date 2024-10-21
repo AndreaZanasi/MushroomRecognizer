@@ -2,7 +2,7 @@ from flask import Flask, g, request, jsonify, render_template, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
 from recognizer import predict, load_model
-from sqlalchemy import create_engine, text, Column, Integer, String, ForeignKey
+from sqlalchemy import create_engine, text, Column, Integer, String, ForeignKey, Float
 from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 from flask_bcrypt import Bcrypt
 import logging
@@ -40,6 +40,7 @@ class Image(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     filename = Column(String(255), nullable=False)
     prediction = Column(String(50), nullable=False)
+    confidence = Column(Float, nullable=False)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     user = relationship('User', back_populates='images')
 
@@ -137,6 +138,7 @@ def recognizer():
             return jsonify({'error': 'No selected files'})
         
         predictions = []
+        confidences = []
         db = get_db()
         user = db.query(User).filter_by(username=session['username']).first()  # Use session to get current user
         
@@ -146,11 +148,12 @@ def recognizer():
             filename = secure_filename(file.filename)
             filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(filepath)
-            prediction = predict(filepath, class_names)
+            prediction, confidence = predict(filepath, class_names)
             predictions.append(prediction)
+            confidences.append(confidence)
             
             # Save image details to the database
-            new_image = Image(filename=filename, prediction=prediction, user=user)
+            new_image = Image(filename=filename, prediction=prediction, confidence=confidence, user=user)
             db.add(new_image)
         
         try:
@@ -159,7 +162,7 @@ def recognizer():
             db.rollback()
             return jsonify({'error': f"Error saving image details: {e}"}), 500
         
-        return jsonify({'predictions': predictions})
+        return jsonify({'predictions': predictions, 'confidences': confidences})
 
 @app.route('/get_analyzed_images')
 def get_analyzed_images():

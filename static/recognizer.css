@@ -121,6 +121,7 @@ body::before {
 h1 {
   margin-bottom: 20px;
   color: rgba(255, 255, 255);
+  text-align: center;
 }
 
 @media (max-width: 600px) {

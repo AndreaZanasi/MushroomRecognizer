@@ -62,7 +62,9 @@
         body: formData
       });
       const result = await response.json();
-      predictionText.innerHTML = result.predictions.join(', ');
+      const predictions = result.predictions;
+      const confidences = result.confidences;
+      predictionText.innerHTML = `<p>${predictions}: ${confidences}%</p>`;
       loader.style.display = 'none';
     };
 
