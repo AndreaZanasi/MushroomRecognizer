@@ -152,7 +152,22 @@ def recognizer():
             return jsonify({'error': f"Error saving image details: {e}"}), 500
         
         return jsonify({'predictions': predictions})
-    
+
+@app.route('/get_analyzed_images')
+def get_analyzed_images():
+    if 'username' not in session:
+        return jsonify({'error': 'User not logged in'}), 401
+
+    db = get_db()
+    user = db.query(User).filter_by(username=session['username']).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    images = db.query(Image).filter_by(user_id=user.id).all()
+    image_data = [{'filename': image.filename, 'prediction': image.prediction} for image in images]
+
+    return jsonify({'images': image_data})
+
 #for DB
 @app.route('/check_db')
 def check_db():

@@ -130,3 +130,61 @@ h1 {
     right: 10px;
   }
 }
+
+.image-gallery-container {
+  margin-top: 20px; /* Adjust the value to set the desired space */
+}
+
+.image-gallery {
+  border: 1px solid rgba(255, 255, 255, 0.3); /* Inherit from result box style */
+  padding: 15px; /* Add padding inside the box */
+  background: rgba(255, 255, 255, 0.1); /* Light background color */
+  border-radius: 10px; /* Rounded corners */
+  width: 100%; /* Full width */
+  max-width: 800px; /* Increase max-width */  /* Adjust as needed */
+  height: auto; /* Allow dynamic height based on image size */
+  overflow: hidden; /* Hide overflowing content */
+  display: flex;
+  align-items: center; /* Center images vertically */
+  position: relative;
+  flex-grow: 1;
+  overflow-x: auto;
+  justify-content: center;
+}
+
+.image-gallery-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100px;
+}
+
+.arrow {
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  position: relative; /* Removed absolute positioning */
+  margin: 0 10px; /* Add margin for spacing */
+}
+
+.left-arrow {
+  left: 10px;
+}
+
+.right-arrow {
+  right: 10px;
+}
+
+.image-container {
+  display: flex;
+  flex-wrap: wrap; /* Allow images to wrap on smaller screens */
+  width: 100%; /* Take full width of the gallery */
+  margin: 0; /* Remove margins to avoid unwanted spacing */
+  height: auto; /* Allow dynamic height based on image size */
+}
+
+.gallery-image {
+  max-width: 100%;
+  height: auto;
+  object-fit: cover;
+}
