@@ -34,6 +34,11 @@
           <div class="image-gallery" id="image-gallery"></div>
           <img src="/static/images/right-arrow.png" alt="Right Arrow" class="arrow right-arrow" onclick="scrollImages(1)">
         </div>
+        <div id="file-details" style="margin-top: 10px;">
+          <p id="file-name"></p>
+          <p id="file-prediction"></p>
+          <p id="file-confidence"></p>
+        </div>
       </section>
     </main>
   </div>
@@ -44,6 +49,9 @@
     const loader = document.getElementById('loader');
     const predictionText = document.getElementById('prediction-text');
     const imageContainer = document.getElementById('image-gallery');
+    const fileNameElement = document.getElementById('file-name');
+    const filePredictionElement = document.getElementById('file-prediction');
+    const fileConfidenceElement = document.getElementById('file-confidence');
     let images = [];
     let currentIndex = 0;
 
@@ -72,6 +80,7 @@
         try {
             const response = await fetch('/get_analyzed_images');
             const data = await response.json();
+            console.log(data)
             images = data.images || [];
             if (images.length > 0) {
                 displayImage(0);
@@ -87,6 +96,9 @@
         if (images.length > 0) {
             const image = images[index];
             imageContainer.innerHTML = `<img src="/uploads/${image.filename}" alt="${image.filename}" class="gallery-image">`;
+            fileNameElement.innerText = `File Name: ${image.filename}`;
+            filePredictionElement.innerText = `Prediction: ${image.prediction}`;
+            fileConfidenceElement.innerText = `Confidence: ${image.confidence}`;
         }
     }
 

@@ -1,4 +1,4 @@
-from flask import Flask, g, request, jsonify, render_template, redirect, url_for, session
+from flask import Flask, g, request, jsonify, render_template, redirect, url_for, session, send_from_directory
 from werkzeug.utils import secure_filename
 import os
 from recognizer import predict, load_model
@@ -65,6 +65,11 @@ class_names = ['Agaricus', 'Amanita', 'Boletus', 'Cortinarius', 'Entoloma', 'Hyg
 @app.route('/')
 def home():
     return render_template('home.html')
+
+# Route to serve files from the uploads directory
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory('uploads', filename)
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
@@ -175,7 +180,7 @@ def get_analyzed_images():
         return jsonify({'error': 'User not found'}), 404
 
     images = db.query(Image).filter_by(user_id=user.id).all()
-    image_data = [{'filename': image.filename, 'prediction': image.prediction} for image in images]
+    image_data = [{'filename': image.filename, 'prediction': image.prediction, 'confidence': image.confidence} for image in images]
 
     return jsonify({'images': image_data})
 

@@ -132,10 +132,6 @@ h1 {
   }
 }
 
-.image-gallery-container {
-  margin-top: 20px; /* Adjust the value to set the desired space */
-}
-
 .image-gallery {
   border: 1px solid rgba(255, 255, 255, 0.3); /* Inherit from result box style */
   padding: 15px; /* Add padding inside the box */
@@ -157,7 +153,7 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 100px;
+  margin-top: 50px;
 }
 
 .arrow {
@@ -185,7 +181,8 @@ h1 {
 }
 
 .gallery-image {
-  max-width: 100%;
+  max-width: 200px; /* Set maximum width */
+  max-height: 200px; /* Set maximum height */
   height: auto;
   object-fit: cover;
 }
