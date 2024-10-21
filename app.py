@@ -14,7 +14,6 @@ load_dotenv()
 app.secret_key = os.getenv('SECRET_KEY')
 DATABASE_URL = os.getenv('DATABASE_URL')
 
-# Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
 engine = create_engine(DATABASE_URL)
@@ -66,7 +65,6 @@ class_names = ['Agaricus', 'Amanita', 'Boletus', 'Cortinarius', 'Entoloma', 'Hyg
 def home():
     return render_template('home.html')
 
-# Route to serve files from the uploads directory
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory('uploads', filename)
@@ -78,7 +76,6 @@ def signin():
         password = request.form['password']
         db = get_db()
         
-        # Check if user already exists
         existing_user = db.query(User).filter_by(username=username).first()
         if existing_user:
             error_message = 'User already exists.Please '
@@ -86,15 +83,13 @@ def signin():
             link = "log in"
             return render_template('error.html', error_message=error_message, redirect_link=redirect_link, link=link), 400
         
-        # Encrypt the password
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        
-        # Create new user
         new_user = User(username=username, password=hashed_password)
         db.add(new_user)
+
         try:
             db.commit()
-            session['username'] = username  # Start the session
+            session['username'] = username  
             return redirect(url_for('recognizer')), 201
         except Exception as e:
             db.rollback()
@@ -110,11 +105,10 @@ def login():
         password = request.form['password']
         db = get_db()
         
-        # Check if user exists
         user = db.query(User).filter_by(username=username).first()
         if user:
             if bcrypt.check_password_hash(user.password, password):
-                session['username'] = username  # Set the session
+                session['username'] = username 
                 return redirect(url_for('recognizer'))
             else:
                 error_message = "Invalid password. Please try again."
@@ -130,7 +124,7 @@ def login():
 @app.route('/recognizer', methods=['GET', 'POST'])
 def recognizer():
     if 'username' not in session:
-        return redirect(url_for('login'))  # Redirect to login if not logged in
+        return redirect(url_for('login'))
 
     if request.method == 'GET':
         return render_template('recognizer.html')
@@ -145,8 +139,8 @@ def recognizer():
         predictions = []
         confidences = []
         db = get_db()
-        user = db.query(User).filter_by(username=session['username']).first()  # Use session to get current user
-        
+        user = db.query(User).filter_by(username=session['username']).first()
+
         for file in files:
             if file.filename == '':
                 continue
@@ -156,11 +150,8 @@ def recognizer():
             prediction, confidence = predict(filepath, class_names)
             predictions.append(prediction)
             confidences.append(confidence)
-            
-            # Save image details to the database
             new_image = Image(filename=filename, prediction=prediction, confidence=confidence, user=user)
             db.add(new_image)
-        
         try:
             db.commit()
         except Exception as e:
@@ -184,7 +175,6 @@ def get_analyzed_images():
 
     return jsonify({'images': image_data})
 
-#for DB
 @app.route('/check_db')
 def check_db():
     try:

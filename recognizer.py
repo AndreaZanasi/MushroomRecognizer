@@ -5,7 +5,6 @@ import torchvision.models as models
 import torch.nn as nn
 import torch.nn.functional as F
 
-# Define the predict_image function
 def predict(image_path, class_names):
     preprocess = transforms.Compose([
         transforms.Resize([350, 350]),
