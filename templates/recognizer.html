@@ -1,62 +1,115 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/static/recognizer.css">
-    <title>Mushroom Recognizer</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/recognizer.css">
+  <title>Mushroom Recognizer</title>
 </head>
 <body>
-    <div class="wrapper">
-        <header>
-            <h1>Mushroom Recognizer</h1>
-        </header>
-        <main>
-            <section class="upload-section">
-                <form id="upload-form" action="/recognizer" method="post" enctype="multipart/form-data">
-                    <label for="image-upload" class="upload-button">
-                        <img src="/static/images/image-.png" alt="Upload Icon" class="icon">
-                        <span>Upload Image</span>
-                        <input id="image-upload" type="file" name="files" accept="image/jpeg, image/jpg" multiple style="display: none;">
-                    </label>
-                    <button type="submit">
-                        <img src="/static/images/analyze.png" alt="Analyze Icon" class="icon">
-                        <span>Analyze</span>
-                    </button>
-                </form>
-                <div id="selected-image-name" style="margin-top: 10px;"></div>
-                <div id="result">
-                    <div class="loader" id="loader" style="display: none;"></div>
-                    <div id="prediction-text"></div>
-                </div>
-            </section>
-        </main>
-    </div>
-    <script>
-        const imageUpload = document.getElementById('image-upload');
-        const selectedImage = document.getElementById('selected-image-name');
-        const resultDiv = document.getElementById('result');
-        const loader = document.getElementById('loader');
-        const predictionText = document.getElementById('prediction-text');
+  <div class="wrapper">
+    <header>
+      <h1>Mushroom Recognizer</h1>
+    </header>
+    <main>
+      <section class="upload-section">
+        <form id="upload-form" action="/recognizer" method="post" enctype="multipart/form-data">
+          <label for="image-upload" class="upload-button">
+            <img src="/static/images/image-.png" alt="Upload Icon" class="icon">
+            <span>Upload Image</span>
+          </label>
+          <button type="submit">
+            <img src="/static/images/analyze.png" alt="Analyze Icon" class="icon">
+            <span>Analyze</span>
+          </button>
+          <input id="image-upload" type="file" name="files" accept="image/jpeg, image/jpg" multiple style="display: none;">
+        </form>
+        <div id="selected-image-name" style="margin-top: 10px;"></div>
+        <div id="result">
+          <div class="loader" id="loader" style="display: none;"></div>
+          <div id="prediction-text"></div>
+        </div>
+        <div class="image-gallery-wrapper">
+          <img src="/static/images/left-arrow.png" alt="Left Arrow" class="arrow left-arrow" onclick="scrollImages(-1)">
+          <div class="image-gallery" id="image-gallery"></div>
+          <img src="/static/images/right-arrow.png" alt="Right Arrow" class="arrow right-arrow" onclick="scrollImages(1)">
+        </div>
+        <div id="file-details" style="margin-top: 10px;">
+          <p id="file-name"></p>
+          <p id="file-prediction"></p>
+          <p id="file-confidence"></p>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script>
+    const imageUpload = document.getElementById('image-upload');
+    const selectedImage = document.getElementById('selected-image-name');
+    const resultDiv = document.getElementById('result');
+    const loader = document.getElementById('loader');
+    const predictionText = document.getElementById('prediction-text');
+    const imageContainer = document.getElementById('image-gallery');
+    const fileNameElement = document.getElementById('file-name');
+    const filePredictionElement = document.getElementById('file-prediction');
+    const fileConfidenceElement = document.getElementById('file-confidence');
+    let images = [];
+    let currentIndex = 0;
 
-        imageUpload.addEventListener('change', function() {
-            const fileName = this.files.length > 0 ? this.files[0].name : 'No file selected';
-            selectedImage.innerText = fileName;
-        });
+    imageUpload.addEventListener('change', function() {
+      const fileName = this.files.length > 0 ? this.files[0].name : 'No file selected';
+      selectedImage.innerText = fileName;
+    });
 
-        document.getElementById('upload-form').onsubmit = async function(event) {
-            event.preventDefault();
-            loader.style.display = 'block';
-            predictionText.innerHTML = ''; // Clear previous prediction
-            const formData = new FormData(this);
-            const response = await fetch('/recognizer', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            predictionText.innerHTML = result.predictions.join(', ');
-            loader.style.display = 'none';
-        };
-    </script>
+    document.getElementById('upload-form').onsubmit = async function(event) {
+      event.preventDefault();
+      loader.style.display = 'block';
+      predictionText.innerHTML = ''; 
+      const formData = new FormData(this);
+      const response = await fetch('/recognizer', {
+        method: 'POST',
+        body: formData
+      });
+      const result = await response.json();
+      const predictions = result.predictions;
+      const confidences = result.confidences;
+      predictionText.innerHTML = `<p>${predictions}: ${confidences}%</p>`;
+      loader.style.display = 'none';
+    };
+
+    async function fetchImages() {
+        try {
+            const response = await fetch('/get_analyzed_images');
+            const data = await response.json();
+            console.log(data)
+            images = data.images || [];
+            if (images.length > 0) {
+                displayImage(0);
+            } else {
+                console.log('No previously analyzed images found.');
+            }
+        } catch (error) {
+            console.error('Error fetching previously analyzed images:', error);
+        }
+    }
+
+    function displayImage(index) {
+        if (images.length > 0) {
+            const image = images[index];
+            imageContainer.innerHTML = `<img src="/uploads/${image.filename}" alt="${image.filename}" class="gallery-image">`;
+            fileNameElement.innerText = `File Name: ${image.filename}`;
+            filePredictionElement.innerText = `Prediction: ${image.prediction}`;
+            fileConfidenceElement.innerText = `Confidence: ${image.confidence}`;
+        }
+    }
+
+    function scrollImages(direction) {
+        if (images.length > 0) {
+            currentIndex = (currentIndex + direction + images.length) % images.length;
+            displayImage(currentIndex);
+        }
+    }
+
+    fetchImages();
+  </script>
 </body>
 </html>

@@ -33,15 +33,15 @@ body::before {
 }
 
 h1 {
-  margin-bottom: 20px; /* Adjust the value as needed */
+  margin-bottom: 20px;
 }
 
 .content {
   text-align: center;
   color: #fff;
-  padding: 0 20px; /* Add padding to the left and right */
-  max-width: 800px; /* Set a maximum width for the content */
-  margin: 0 auto; /* Center the content */
+  padding: 0 20px;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 .buttons {

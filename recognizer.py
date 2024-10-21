@@ -3,8 +3,8 @@ import torchvision.transforms as transforms
 from PIL import Image
 import torchvision.models as models
 import torch.nn as nn
+import torch.nn.functional as F
 
-# Define the predict_image function
 def predict(image_path, class_names):
     preprocess = transforms.Compose([
         transforms.Resize([350, 350]),
@@ -19,8 +19,12 @@ def predict(image_path, class_names):
     
     with torch.no_grad():
         outputs = model(image)
-        _, predicted = torch.max(outputs, 1)
-        return class_names[predicted.item()]
+        probabilities = F.softmax(outputs, dim=1) * 100
+        _, predicted = torch.max(probabilities, 1)
+        predicted_name = class_names[predicted.item()]
+        confidence = probabilities[0][predicted.item()]
+        
+        return predicted_name, round(float(confidence),1)
     
 def load_model():
     model = models.resnet18(weights=None)
@@ -28,6 +32,6 @@ def load_model():
     number_of_classes = 9
     model.fc = nn.Linear(num_ftrs, number_of_classes)
 
-    model.load_state_dict(torch.load(r'weights\model_weights(lr=0.01,mom=0.9,wd=0.003,pretr=Yes,bs=32,ep=50,size=350,trainacc=98.07864164432529,testacc=98.8978254393804).pth', map_location=torch.device('cpu'), weights_only=True))
+    model.load_state_dict(torch.load(r'weights/model_weights(lr=0.01,mom=0.9,wd=0.003,pretr=Yes,bs=32,ep=50,size=350,trainacc=98.07864164432529,testacc=98.8978254393804).pth', map_location=torch.device('cpu'), weights_only=True))
     model.eval()
     return model

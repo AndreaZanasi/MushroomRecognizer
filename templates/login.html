@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log In</title>
-    <link rel="stylesheet" href="/static/login.css">
+    <link rel="stylesheet" href="/static/auth.css">
 </head>
 <body>
     <div class="wrapper">
@@ -19,7 +19,7 @@
                 <label>Password</label>
             </div>
             <button type="submit">Log In</button>
-            <p class="redirect-text">If you don't have an account, <a href="{{ url_for('register') }}">sign in</a>.</p>
+            <p class="redirect-text">If you don't have an account, <a href="{{ url_for('signin') }}">sign in</a>.</p>
         </form>
     </div>
 </body>
