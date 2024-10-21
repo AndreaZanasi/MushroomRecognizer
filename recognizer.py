@@ -28,6 +28,6 @@ def load_model():
     number_of_classes = 9
     model.fc = nn.Linear(num_ftrs, number_of_classes)
 
-    model.load_state_dict(torch.load(r'weights\model_weights(lr=0.01,mom=0.9,wd=0.003,pretr=Yes,bs=32,ep=50,size=350,trainacc=98.07864164432529,testacc=98.8978254393804).pth', map_location=torch.device('cpu'), weights_only=True))
+    model.load_state_dict(torch.load(r'weights/model_weights(lr=0.01,mom=0.9,wd=0.003,pretr=Yes,bs=32,ep=50,size=350,trainacc=98.07864164432529,testacc=98.8978254393804).pth', map_location=torch.device('cpu'), weights_only=True))
     model.eval()
     return model

@@ -66,7 +66,7 @@ def home():
     return render_template('home.html')
 
 @app.route('/signin', methods=['GET', 'POST'])
-def register():
+def signin():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
@@ -75,8 +75,10 @@ def register():
         # Check if user already exists
         existing_user = db.query(User).filter_by(username=username).first()
         if existing_user:
-            error_message = "User already exists. Please log in."
-            return render_template('error.html', error_message=error_message), 400
+            error_message = 'User already exists.Please '
+            redirect_link = url_for("login")
+            link = "log in"
+            return render_template('error.html', error_message=error_message, redirect_link=redirect_link, link=link), 400
         
         # Encrypt the password
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
@@ -104,12 +106,18 @@ def login():
         
         # Check if user exists
         user = db.query(User).filter_by(username=username).first()
-        if user and bcrypt.check_password_hash(user.password, password):
-            session['username'] = username  # Set the session
-            return redirect(url_for('recognizer'))
+        if user:
+            if bcrypt.check_password_hash(user.password, password):
+                session['username'] = username  # Set the session
+                return redirect(url_for('recognizer'))
+            else:
+                error_message = "Invalid password. Please try again."
+                return render_template('error.html', error_message=error_message)
         else:
-            error_message = "Invalid username or password."
-            return render_template('error.html', error_message=error_message)
+            error_message = "User does not exist. Please "
+            redirect_link = url_for("signin")
+            link = "sign in"
+            return render_template('error.html', error_message=error_message, redirect_link=redirect_link, link=link)
     
     return render_template('login.html')
 
