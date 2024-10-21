@@ -130,3 +130,7 @@ button:hover {
   border-color: #fff;
   background: rgba(255, 255, 255, 0.15);
 }
+
+.redirect-text {
+  margin-top: 20px;
+}

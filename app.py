@@ -1,28 +1,32 @@
-from flask import Flask, g, request, jsonify, render_template, redirect, url_for
+from flask import Flask, g, request, jsonify, render_template, redirect, url_for, session
 from werkzeug.utils import secure_filename
 import os
 from recognizer import predict, load_model
-from sqlalchemy import create_engine, text, Column, Integer, String
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy import create_engine, text, Column, Integer, String, ForeignKey
+from sqlalchemy.orm import sessionmaker, declarative_base, relationship
 from flask_bcrypt import Bcrypt
 import logging
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
+load_dotenv()
+app.secret_key = os.getenv('SECRET_KEY')
+DATABASE_URL = os.getenv('DATABASE_URL')
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 
-engine = create_engine('mysql://root:SOLpo90567&%@127.0.0.1:3306/MushroomDB')
+engine = create_engine(DATABASE_URL)
 
 Base = declarative_base()
 
 class User(Base):
     __tablename__ = 'users'
-
     id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(50), unique=True, nullable=False)
     password = Column(String(255), nullable=False)
+    images = relationship('Image', back_populates='user', cascade='all, delete-orphan')
 
     def to_dict(self):
         return {
@@ -30,6 +34,14 @@ class User(Base):
             'username': self.username,
             'password': self.password
         }
+
+class Image(Base):
+    __tablename__ = 'images'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    filename = Column(String(255), nullable=False)
+    prediction = Column(String(50), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user = relationship('User', back_populates='images')
 
 def get_db():
     if 'db' not in g:
@@ -74,6 +86,7 @@ def register():
         db.add(new_user)
         try:
             db.commit()
+            session['username'] = username  # Start the session
             return redirect(url_for('recognizer')), 201
         except Exception as e:
             db.rollback()
@@ -92,24 +105,33 @@ def login():
         # Check if user exists
         user = db.query(User).filter_by(username=username).first()
         if user and bcrypt.check_password_hash(user.password, password):
-            return redirect(url_for('recognizer')), 200
+            session['username'] = username  # Set the session
+            return redirect(url_for('recognizer'))
         else:
             error_message = "Invalid username or password."
-            return render_template('error.html', error_message=error_message), 400
+            return render_template('error.html', error_message=error_message)
     
     return render_template('login.html')
 
 @app.route('/recognizer', methods=['GET', 'POST'])
 def recognizer():
+    if 'username' not in session:
+        return redirect(url_for('login'))  # Redirect to login if not logged in
+
     if request.method == 'GET':
         return render_template('recognizer.html')
     elif request.method == 'POST':
         if 'files' not in request.files:
             return jsonify({'error': 'No file part'})
+        
         files = request.files.getlist('files')
         if not files:
             return jsonify({'error': 'No selected files'})
+        
         predictions = []
+        db = get_db()
+        user = db.query(User).filter_by(username=session['username']).first()  # Use session to get current user
+        
         for file in files:
             if file.filename == '':
                 continue
@@ -118,6 +140,17 @@ def recognizer():
             file.save(filepath)
             prediction = predict(filepath, class_names)
             predictions.append(prediction)
+            
+            # Save image details to the database
+            new_image = Image(filename=filename, prediction=prediction, user=user)
+            db.add(new_image)
+        
+        try:
+            db.commit()
+        except Exception as e:
+            db.rollback()
+            return jsonify({'error': f"Error saving image details: {e}"}), 500
+        
         return jsonify({'predictions': predictions})
     
 #for DB
