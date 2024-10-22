@@ -90,7 +90,7 @@ def signin():
         try:
             db.commit()
             session['username'] = username  
-            return redirect(url_for('recognizer')), 201
+            return redirect(url_for('recognizer'))
         except Exception as e:
             db.rollback()
             error_message = f"Error registering user: {e}"
