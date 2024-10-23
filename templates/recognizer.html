@@ -12,6 +12,18 @@
       <h1>Mushroom Recognizer</h1>
     </header>
     <main>
+      <p class="warning-text">
+        WARNING: the model is trained to recognize only mushrooms among the following species:
+      </p>
+      <p class="warning-text">
+        Agaricus, Amanita, Boletus, Cortinarius, Entoloma, Hygrocybe, Lactarius, Russula, Suillus.
+      </p>
+      <p class="warning-text">
+        To analyze an image, upload the desired image and click on the "Analyze" button.
+      </p>
+      <p class="warning-text">
+        Accepted file formats are .jpg and .jpeg.
+      </p>
       <section class="upload-section">
         <form id="upload-form" action="/recognizer" method="post" enctype="multipart/form-data">
           <label for="image-upload" class="upload-button">
@@ -42,74 +54,6 @@
       </section>
     </main>
   </div>
-  <script>
-    const imageUpload = document.getElementById('image-upload');
-    const selectedImage = document.getElementById('selected-image-name');
-    const resultDiv = document.getElementById('result');
-    const loader = document.getElementById('loader');
-    const predictionText = document.getElementById('prediction-text');
-    const imageContainer = document.getElementById('image-gallery');
-    const fileNameElement = document.getElementById('file-name');
-    const filePredictionElement = document.getElementById('file-prediction');
-    const fileConfidenceElement = document.getElementById('file-confidence');
-    let images = [];
-    let currentIndex = 0;
-
-    imageUpload.addEventListener('change', function() {
-      const fileName = this.files.length > 0 ? this.files[0].name : 'No file selected';
-      selectedImage.innerText = fileName;
-    });
-
-    document.getElementById('upload-form').onsubmit = async function(event) {
-      event.preventDefault();
-      loader.style.display = 'block';
-      predictionText.innerHTML = ''; 
-      const formData = new FormData(this);
-      const response = await fetch('/recognizer', {
-        method: 'POST',
-        body: formData
-      });
-      const result = await response.json();
-      const predictions = result.predictions;
-      const confidences = result.confidences;
-      predictionText.innerHTML = `<p>${predictions}: ${confidences}%</p>`;
-      loader.style.display = 'none';
-    };
-
-    async function fetchImages() {
-        try {
-            const response = await fetch('/get_analyzed_images');
-            const data = await response.json();
-            console.log(data)
-            images = data.images || [];
-            if (images.length > 0) {
-                displayImage(0);
-            } else {
-                console.log('No previously analyzed images found.');
-            }
-        } catch (error) {
-            console.error('Error fetching previously analyzed images:', error);
-        }
-    }
-
-    function displayImage(index) {
-        if (images.length > 0) {
-            const image = images[index];
-            imageContainer.innerHTML = `<img src="/uploads/${image.filename}" alt="${image.filename}" class="gallery-image">`;
-            fileNameElement.innerText = `File Name: ${image.filename}`;
-            filePredictionElement.innerText = `Prediction: ${image.prediction}`;
-            fileConfidenceElement.innerText = `Confidence: ${image.confidence}`;
-        }
-    }
-
-    function scrollImages(direction) {
-        if (images.length > 0) {
-            currentIndex = (currentIndex + direction + images.length) % images.length;
-            displayImage(currentIndex);
-        }
-    }
-
-    fetchImages();
-  </script>
+  <script src="/static/recognizer.js"></script>
 </body>
 </html>

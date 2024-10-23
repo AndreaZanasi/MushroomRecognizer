@@ -32,6 +32,12 @@ body::before {
   z-index: -1;
 }
 
+.warning-text {
+  color: rgba(255, 255, 255);
+  font-size: 16px; 
+  text-align: center; 
+}
+
 #result {
   margin-top: 20px;
   font-size: 1.2rem;
