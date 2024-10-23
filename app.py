@@ -1,47 +1,26 @@
+# This file sets up a Flask web application for mushroom recognition. It includes routes for user authentication, 
+# image upload and prediction, and database interaction.
+
 from flask import Flask, g, request, jsonify, render_template, redirect, url_for, session, send_from_directory
 from werkzeug.utils import secure_filename
 import os
 from recognizer import predict, load_model
-from sqlalchemy import create_engine, text, Column, Integer, String, ForeignKey, Float
-from sqlalchemy.orm import sessionmaker, declarative_base, relationship
-from flask_bcrypt import Bcrypt
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
 import logging
-from dotenv import load_dotenv
+from models import Base, User, Image  
+import config
 
 app = Flask(__name__)
-bcrypt = Bcrypt(app)
-load_dotenv()
-app.secret_key = os.getenv('SECRET_KEY')
-DATABASE_URL = os.getenv('DATABASE_URL')
+app.secret_key = config.SECRET_KEY
+app.config['UPLOAD_FOLDER'] = config.UPLOAD_FOLDER
 
+config.bcrypt.init_app(app)
 logging.basicConfig(level=logging.DEBUG)
 
-engine = create_engine(DATABASE_URL)
-
-Base = declarative_base()
-
-class User(Base):
-    __tablename__ = 'users'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(50), unique=True, nullable=False)
-    password = Column(String(255), nullable=False)
-    images = relationship('Image', back_populates='user', cascade='all, delete-orphan')
-
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'username': self.username,
-            'password': self.password
-        }
-
-class Image(Base):
-    __tablename__ = 'images'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    filename = Column(String(255), nullable=False)
-    prediction = Column(String(50), nullable=False)
-    confidence = Column(Float, nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    user = relationship('User', back_populates='images')
+engine = config.engine
+model = load_model()
+class_names = ['Agaricus', 'Amanita', 'Boletus', 'Cortinarius', 'Entoloma', 'Hygrocybe', 'Lactarius', 'Russula', 'Suillus']
 
 def get_db():
     if 'db' not in g:
@@ -56,19 +35,17 @@ def shutdown_session(exception=None):
 
 Base.metadata.create_all(engine)
 
-app.config['UPLOAD_FOLDER'] = 'uploads/'
-
-model = load_model()
-class_names = ['Agaricus', 'Amanita', 'Boletus', 'Cortinarius', 'Entoloma', 'Hygrocybe', 'Lactarius', 'Russula', 'Suillus']
-
+# Home route: renders the home page
 @app.route('/')
 def home():
     return render_template('home.html')
 
+# Uploads route: serves uploaded files
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory('uploads', filename)
 
+# Signin route: handles user registration
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
     if request.method == 'POST':
@@ -83,7 +60,7 @@ def signin():
             link = "log in"
             return render_template('error.html', error_message=error_message, redirect_link=redirect_link, link=link), 400
         
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+        hashed_password = config.bcrypt.generate_password_hash(password).decode('utf-8')
         new_user = User(username=username, password=hashed_password)
         db.add(new_user)
 
@@ -98,6 +75,7 @@ def signin():
     
     return render_template('signin.html')
 
+# Login route: handles user login
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -107,7 +85,7 @@ def login():
         
         user = db.query(User).filter_by(username=username).first()
         if user:
-            if bcrypt.check_password_hash(user.password, password):
+            if config.bcrypt.check_password_hash(user.password, password):
                 session['username'] = username 
                 return redirect(url_for('recognizer'))
             else:
@@ -121,6 +99,7 @@ def login():
     
     return render_template('login.html')
 
+# Recognizer route: handles image upload and prediction
 @app.route('/recognizer', methods=['GET', 'POST'])
 def recognizer():
     if 'username' not in session:
@@ -160,6 +139,7 @@ def recognizer():
         
         return jsonify({'predictions': predictions, 'confidences': confidences})
 
+# Get analyzed images route: retrieves analyzed images for the logged-in user
 @app.route('/get_analyzed_images')
 def get_analyzed_images():
     if 'username' not in session:
@@ -175,6 +155,7 @@ def get_analyzed_images():
 
     return jsonify({'images': image_data})
 
+# Check DB route: checks the database connection
 @app.route('/check_db')
 def check_db():
     try:
@@ -185,6 +166,4 @@ def check_db():
         return f"Database connection failed: {e}", 500
 
 if __name__ == '__main__':
-    if not os.path.exists(app.config['UPLOAD_FOLDER']):
-        os.makedirs(app.config['UPLOAD_FOLDER'])
     app.run(debug=True)

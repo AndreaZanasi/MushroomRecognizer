@@ -1,3 +1,6 @@
+# This script defines a function to predict the class of a mushroom image using a pre-trained ResNet-18 model.
+# It includes functions to preprocess the image, load the model, and make predictions with confidence scores.
+
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
@@ -7,9 +10,9 @@ import torch.nn.functional as F
 
 def predict(image_path, class_names):
     preprocess = transforms.Compose([
-        transforms.Resize([350, 350]),
+        transforms.Resize([400, 400]),
         transforms.ToTensor(),
-        transforms.Normalize(mean=[0.2787, 0.2223, 0.1592], std=[0.2433, 0.2235, 0.2131])
+        transforms.Normalize(mean=[0.4639, 0.6601, 0.5745], std=[0.9625, 0.9623, 0.9794])
     ])
 
     image = Image.open(image_path).convert('RGB')
@@ -32,6 +35,8 @@ def load_model():
     number_of_classes = 9
     model.fc = nn.Linear(num_ftrs, number_of_classes)
 
-    model.load_state_dict(torch.load(r'weights/model_weights(lr=0.01,mom=0.9,wd=0.003,pretr=Yes,bs=32,ep=50,size=350,trainacc=98.07864164432529,testacc=98.8978254393804).pth', map_location=torch.device('cpu'), weights_only=True))
+    model.load_state_dict(torch.load(r'weights\model_weights(lr=0.01,mom=0.9,wd=0.003,pretr=Yes,bs=32,ep=50,size=400,trainacc=97.58713136729223,testacc=99.38933571641347).pth', 
+                                     map_location=torch.device('cpu'), 
+                                     weights_only=True))
     model.eval()
     return model
