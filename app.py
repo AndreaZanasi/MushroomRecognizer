@@ -55,7 +55,7 @@ def signin():
         
         existing_user = db.query(User).filter_by(username=username).first()
         if existing_user:
-            error_message = 'User already exists.Please '
+            error_message = 'User already exists. Please '
             redirect_link = url_for("login")
             link = "log in"
             return render_template('error.html', error_message=error_message, redirect_link=redirect_link, link=link), 400
@@ -92,7 +92,7 @@ def login():
                 error_message = "Invalid password. Please try again."
                 return render_template('error.html', error_message=error_message)
         else:
-            error_message = "User does not exist. Please "
+            error_message = 'User does not exist. Please '
             redirect_link = url_for("signin")
             link = "sign in"
             return render_template('error.html', error_message=error_message, redirect_link=redirect_link, link=link)
