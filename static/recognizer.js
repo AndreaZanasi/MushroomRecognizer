@@ -60,7 +60,7 @@ function displayImage(index) {
                 imageContainer.innerHTML = `<img src="/uploads/${image.filename}" alt="${image.filename}" class="gallery-image">`;
                 fileNameElement.innerText = `File Name: ${image.filename}`;
                 filePredictionElement.innerText = `Prediction: ${image.prediction}`;
-                fileConfidenceElement.innerText = `Confidence: ${image.confidence}`;
+                fileConfidenceElement.innerText = `Confidence: ${image.confidence}%`;
         }
 }
 

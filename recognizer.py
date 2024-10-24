@@ -5,6 +5,7 @@ import torch
 import torchvision.transforms as transforms
 from PIL import Image
 import torchvision.models as models
+from torchvision.models import ResNet18_Weights
 import torch.nn as nn
 import torch.nn.functional as F
 
@@ -30,12 +31,12 @@ def predict(image_path, class_names):
         return predicted_name, round(float(confidence),1)
     
 def load_model():
-    model = models.resnet18(weights=None)
+    model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1) 
     num_ftrs = model.fc.in_features
     number_of_classes = 9
     model.fc = nn.Linear(num_ftrs, number_of_classes)
 
-    model.load_state_dict(torch.load(r'weights\model_weights(lr=0.01,mom=0.9,wd=0.003,pretr=Yes,bs=32,ep=50,size=400,trainacc=97.58713136729223,testacc=99.38933571641347).pth', 
+    model.load_state_dict(torch.load(r'weights/model_weights(lr=0.01,mom=0.9,wd=0.003,pretr=Yes,bs=32,ep=50,size=400,trainacc=97.58713136729223,testacc=99.38933571641347).pth', 
                                      map_location=torch.device('cpu'), 
                                      weights_only=True))
     model.eval()
