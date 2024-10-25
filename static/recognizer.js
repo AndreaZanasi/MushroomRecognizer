@@ -27,7 +27,13 @@ document.getElementById('upload-form').onsubmit = async function(event) {
     const result = await response.json();
     const predictions = result.predictions;
     const confidences = result.confidences;
-    predictionText.innerHTML = `<p>${predictions}: ${confidences}%</p>`;
+    const linksResponse = await fetch('/static/links.json');
+    const links = await linksResponse.json();
+    const wikiLink = links[predictions] || '#';
+    predictionText.innerHTML = `
+        <p>${predictions}: ${confidences}%</p>
+        <p>For more information <a href="${wikiLink}" target="_blank">click here</a></p>
+    `;
     loader.style.display = 'none';
 };
 
