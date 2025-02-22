@@ -59,7 +59,7 @@ Welcome to the Mushroom Recognizer web application! This application is designed
     source venv/bin/activate
     ```
 
-3. **Install dependencies**:
+3. **Install dependencies**
 
 4. **Set up the environment variables**:
     Create a `.env` file and add the necessary environment variables as specified in `config.py`.
